@@ -13,9 +13,9 @@ In future updates, we plan to implement an option to scan for ports opened to re
 
 ### 1.3 Definitions, Acronyms, and Abbreviations  
 #### 1.3.1 Definitions:
-<ins>TCP<ins>>: internet protocol used to reliably transfer data using a threeway handshake(SYN, SYN-ACK, ACK)
-<ins>UDP<ins>>:
-<ins>SYN<ins>>:
+<ins>TCP<ins>>: internet protocol used to reliably transfer data using a three-way handshake(SYN, SYN-ACK, ACK)
+<ins>UDP<ins>>: internet protocol that sends out packets without the garentee of arrival or response in contrast with the TCP protocol.
+<ins>SYN<ins>>: 
 <ins>Port<ins>>:
 <ins>Threading<ins>>:
 
