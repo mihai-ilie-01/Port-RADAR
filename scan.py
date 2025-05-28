@@ -11,11 +11,12 @@ from tqdm import tqdm
 
 class ThreadedPortScanner:
     
-    def __init__(self, ip, start_port=1, end_port=65535, num_threads=os.cpu_count()*100, timeout=1,rate_limit=0.1, log=False):
+    def __init__(self, ip, start_port=1, end_port=65535, selected_ports=None, num_threads=os.cpu_count()*100, timeout=1,rate_limit=0.1, log=False):
         # Parameter initialized instances
         self.ip = ip
         self.start_port = start_port
         self.end_port = end_port
+        self.selected_ports = selected_ports
         self.num_threads = num_threads
         self.timeout = timeout
         self.rate_limit = rate_limit
@@ -28,12 +29,19 @@ class ThreadedPortScanner:
         self.port_queue = Queue()
         self.print_lock = Lock()
         self.startime = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        self.total_ports= end_port- start_port+1  
+        if selected_ports is None:
+            self.total_ports= end_port - start_port + 1
+        else:
+            self.total_ports= len(selected_ports)
         self.progress_bar = None
         self.completed_ports = 0
 
-        for port in range(start_port, end_port + 1):    # Fill the queue with ports to scan
-            self.port_queue.put(port)
+        if selected_ports:
+            for port in selected_ports:    # Fill the queue with ports to scan
+                self.port_queue.put(port)
+        else:
+            for port in range(start_port, end_port + 1):    # Fill the queue with ports to scan
+                self.port_queue.put(port)
     
     def scan_port(self, port):
         """

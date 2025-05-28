@@ -12,9 +12,10 @@ def parse_port_range(port_range):
         start, end = port_range.split('-')
         return int(start), int(end)
     elif ',' in port_range:
-        # For comma-separated ports, return min and max
+        #@parse func
+        # For comma-separated ports, return the chosen ports
         ports = [int(p.strip()) for p in port_range.split(',')]
-        return min(ports), max(ports)
+        return ports
     else:
         # Single port
         port = int(port_range)
@@ -78,14 +79,27 @@ def get_user_input():
     print("-" * 18)
     while True:
         try:
+            #@get user input
             port_range = input("Enter port range to scan (default 1-65535): ").strip()
+
             if not port_range:
                 port_range = "1-65535"
-            start_port, end_port = parse_port_range(port_range)
-            if 1 <= start_port <= 65535 and 1 <= end_port <= 65535 and start_port <= end_port:
-                break
+            if type(parse_port_range(port_range)) == list:
+                start_port = None
+                end_port = None
+                selected_ports = parse_port_range(port_range)
+                if all(1 <=num <= 65355 for num in selected_ports):
+                    break
+                else:
+                    print("Invalid ports selected. Ports must be between 1 and 65535 included.")
+                    
             else:
-                print("Invalid port range. Ports must be between 1-65535 and start <= end.")
+                start_port, end_port = parse_port_range(port_range)
+                selected_ports = None
+                if 1 <= start_port <= 65535 and 1 <= end_port <= 65535 and start_port <= end_port:
+                    break
+                else:
+                    print("Invalid port range. Ports must be between 1-65535 and start <= end.")
         except ValueError:
             print("Invalid port format. Use format like '1-1024' or '80'.")
     print()
@@ -165,8 +179,13 @@ def get_user_input():
     print("SCAN CONFIGURATION SUMMARY")
     print("=" * 60)
     print(f"Target: {target}")
-    print(f"Port Range: {start_port}-{end_port}")
-    print(f"Total Ports: {end_port - start_port + 1}")
+    #@config user input
+    if selected_ports is None:
+        print(f"Port Range: {start_port}-{end_port}")
+        print(f"Total Ports: {end_port - start_port + 1}")
+    else:
+        print(f"Selected Ports: {selected_ports}")
+        print(f"Total Ports: {len(selected_ports)}")
     print(f"Threads: {threads}")
     print(f"Timeout: {timeout} seconds")
     print(f"Rate Limiting: {'Yes' if delay > 0 else 'No'}")
@@ -184,6 +203,7 @@ def get_user_input():
         'target': target,
         'start_port': start_port,
         'end_port': end_port,
+        'selected_ports' : selected_ports,
         'threads': threads,
         'timeout': timeout,
         'rate_limit': delay,
@@ -217,7 +237,20 @@ def main():
             sys.exit(1)
 
         try:
-            start_port, end_port = parse_port_range(args.ports)
+            if type(parse_port_range(args.ports)) == list:
+                start_port = None
+                end_port = None
+                selected_ports = parse_port_range(args.ports)
+                print(selected_ports)
+                if all(1 > num > 65355 for num in selected_ports):
+                    raise ValueError
+                    
+            else:
+                start_port, end_port = parse_port_range(args.ports)
+                selected_ports = None
+                if 1 > start_port > 65535 and 1 > end_port > 65535 and start_port <= end_port:
+                    raise ValueError
+                
         except ValueError:
             print(f"Error: Invalid port range '{args.ports}'")
             sys.exit(1)
@@ -244,6 +277,7 @@ def main():
             'target': args.target,
             'start_port': start_port,
             'end_port': end_port,
+            'selected_ports': selected_ports,
             'threads': args.threads,
             'timeout': args.timeout,
             'rate_limit': args.delay,
@@ -266,6 +300,7 @@ def main():
         ip=config['target'],
         start_port=config['start_port'],
         end_port=config['end_port'],
+        selected_ports=config['selected_ports'],
         num_threads=config['threads'],
         timeout=config['timeout'],
         rate_limit=config['rate_limit'],
