@@ -1,5 +1,4 @@
-# Port RADAR
-
+```
  /$$$$$$$                       /$$           /$$$$$$$                  /$$                    
 | $$__  $$                     | $$          | $$__  $$                | $$                    
 | $$  \ $$ /$$$$$$   /$$$$$$  /$$$$$$        | $$  \ $$  /$$$$$$   /$$$$$$$  /$$$$$$   /$$$$$$ 
@@ -9,6 +8,7 @@
 | $$     |  $$$$$$/| $$        |  $$$$/      | $$  | $$|  $$$$$$$|  $$$$$$$|  $$$$$$$| $$      
 |__/      \______/ |__/         \___/        |__/  |__/ \_______/ \_______/ \_______/|__/ 
 
+```
 
 A fast, multi-threaded TCP port scanner written in Python. Scan single hosts or ranges of ports with customizable performance and logging options, either interactively or via command-line.
 
@@ -150,9 +150,3 @@ This project is provided for educational and authorized security testing purpose
 
 Happy scanning!
 
-Citations:
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/40274892/159fb87d-d988-4372-a6b9-a47038c167c3/scan.py
-[2] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/attachments/40274892/0b94c579-0fba-46de-b23b-bad63f6728af/main.py
-
----
-Answer from Perplexity: pplx.ai/share
