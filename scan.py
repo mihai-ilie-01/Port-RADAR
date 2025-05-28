@@ -135,8 +135,8 @@ class ThreadedPortScanner:
 
         if self.log == True:
             port_df = pd.DataFrame(sorted(self.open_ports), columns=["TIME", "IP", "PORT", "TYPE", "STATUS"])
-            port_df.to_csv(f"./logs/portscan_{self.startime}.csv", index=False)
+            port_df.to_csv(f"./logs/{self.startime}_scannedports.csv", index=False)
             error_df = pd.DataFrame(sorted(self.error_ports), columns=["TIME", "IP", "PORT", "TYPE", "ERROR"])
-            error_df.to_csv(f"./logs/errorlogs_{self.startime}.csv", index=False)
+            error_df.to_csv(f"./logs/{self.startime}_errorlogs.csv", index=False)
 
 
