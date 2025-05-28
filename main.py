@@ -4,6 +4,7 @@ import socket
 from scan import ThreadedPortScanner
 import os
 from tqdm import tqdm
+import datetime
 
 def parse_port_range(port_range):
     """Parse port range string into start and end ports"""
@@ -175,8 +176,8 @@ def get_user_input():
     print("=" * 60)
 
     confirm = input("\nProceed with scan? (Y/N): ").strip().upper()
-    if confirm != 'Y':
-        print("Scan cancelled by user.")
+    if confirm and confirm != "Y":
+        print("Scan cancelled by user")
         sys.exit(0)
 
     return {
@@ -235,8 +236,9 @@ def main():
             sys.exit(1)
 
         # Create logs directory if logging is enabled
-        if args.log and not os.path.exists('./logs'):
-            os.makedirs('./logs')
+        if args.log and not os.path.exists(f'./logs/'):
+            os.makedirs(f'./logs/')
+        
 
         config = {
             'target': args.target,
