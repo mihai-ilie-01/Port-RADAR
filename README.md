@@ -9,7 +9,6 @@
 |__/      \______/ |__/         \___/        |__/  |__/ \_______/ \_______/ \_______/|__/ 
 
 ```
-hello
 A fast, multi-threaded TCP port scanner written in Python. Scan single hosts or ranges of ports with customizable performance and logging options, either interactively or via command-line.
 
 ---
