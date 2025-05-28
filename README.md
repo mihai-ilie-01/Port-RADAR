@@ -134,7 +134,7 @@ _BeCode Python Port Scanner Project_
 
 ---
 
-## License
+## Disclaimer
 
 This project is provided for educational and authorized security testing purposes only. Unauthorized scanning may be illegal.
 
