@@ -28,7 +28,7 @@ def validate_ip(ip):
         return False
 
 def get_user_input():
-    Asciiart = """
+    Asciiart = r"""
                                  ⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
                                  ⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
                                  ⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣦⡄⠀
