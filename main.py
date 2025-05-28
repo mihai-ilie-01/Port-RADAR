@@ -2,7 +2,6 @@ import sys
 import argparse
 import socket
 from scan import ThreadedPortScanner
-import re
 import os
 from tqdm import tqdm
 
