@@ -175,7 +175,7 @@ def get_user_input():
     print(f"Save Logs: {'Yes' if log_enabled else 'No'}")
     print("=" * 60)
 
-    confirm = input("\nProceed with scan? (Y/N): ").strip().upper()
+    confirm = input("\nProceed with scan? (Y/N, default Y): ").strip().upper()
     if confirm and confirm != "Y":
         print("Scan cancelled by user")
         sys.exit(0)
