@@ -128,7 +128,7 @@ Results saved to ./logs/
 
 - Mihai
 - Jeremie
-- Bilal
+- Bilel
 
 _BeCode Python Port Scanner Project_
 
