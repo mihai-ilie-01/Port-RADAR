@@ -94,6 +94,7 @@ python main.py 192.168.1.1 -p 1-1024 -t 500 -T 2 --log
 - If logging is enabled, results are saved in the `logs/` directory:
   - `scannedports_.csv` — Open ports
   - `errorlogs_.csv` — Errors and timeouts
+  - `closedports_.csv` — Self-explanatory
 
 ---
 

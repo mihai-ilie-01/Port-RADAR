@@ -175,10 +175,10 @@ def get_user_input():
     print("=" * 60)
 
     confirm = input("\nProceed with scan? (Y/N): ").strip().upper()
-    if confirm != 'Y':
+    if confirm and confirm != 'Y':
         print("Scan cancelled by user.")
         sys.exit(0)
-
+        
     return {
         'target': target,
         'start_port': start_port,
