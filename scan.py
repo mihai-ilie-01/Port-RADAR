@@ -36,42 +36,41 @@ class ThreadedPortScanner:
             self.port_queue.put(port)
     
     def scan_port(self, port):
-def scan_port(self, port):
-    """
-    Tries to establish a TCP connection with the specified port.    
-    port : the port we try to establish a connection with
-    """
-    try:
-        if self.rate_limit > 0:
-            time.sleep(self.rate_limit)     
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(self.timeout)
-            result = s.connect_ex((self.ip, port))              
-            timestamp = datetime.now().strftime("%H:%M:%S")             
+        """
+        Tries to establish a TCP connection with the specified port.    
+        port : the port we try to establish a connection with
+        """
+        try:
+            if self.rate_limit > 0:
+                time.sleep(self.rate_limit)     
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(self.timeout)
+                result = s.connect_ex((self.ip, port))              
+                timestamp = datetime.now().strftime("%H:%M:%S")             
+                with self.print_lock:
+                    if result == 0:
+                        # Port is open
+                        self.open_ports.append((timestamp, self.ip, port, "tcp", "open"))
+                        tqdm.write(f"[{timestamp}] Found open port: {port}")
+                        if self.progress_bar:
+                            self.progress_bar.set_description(f"Scanning ports (Found: {len(self.open_ports)} open)")                   
+                    elif result == errno.ECONNREFUSED:
+                        self.closed_ports.append((timestamp, self.ip, port, "tcp", "Connection refused - port is closed"))                  
+                    elif result in self.ERROR_CODES:
+                        _, error_msg = self.ERROR_CODES[result]
+                        self.error_ports.append((timestamp, self.ip, port, "tcp", f"{error_msg} on port {port}"))                   
+                    else:
+                        error_name = errno.errorcode.get(result, f"UNKNOWN_ERROR_{result}")
+                        self.error_ports.append((timestamp, self.ip, port, "tcp", f"{error_name}: Port scan failed on {port}"))     
+        except Exception as e:
             with self.print_lock:
-                if result == 0:
-                    # Port is open
-                    self.open_ports.append((timestamp, self.ip, port, "tcp", "open"))
-                    tqdm.write(f"[{timestamp}] Found open port: {port}")
-                    if self.progress_bar:
-                        self.progress_bar.set_description(f"Scanning ports (Found: {len(self.open_ports)} open)")                   
-                elif result == errno.ECONNREFUSED:
-                    self.closed_ports.append((timestamp, self.ip, port, "tcp", "Connection refused - port is closed"))                  
-                elif result in self.ERROR_CODES:
-                    _, error_msg = self.ERROR_CODES[result]
-                    self.error_ports.append((timestamp, self.ip, port, "tcp", f"{error_msg} on port {port}"))                   
-                else:
-                    error_name = errno.errorcode.get(result, f"UNKNOWN_ERROR_{result}")
-                    self.error_ports.append((timestamp, self.ip, port, "tcp", f"{error_name}: Port scan failed on {port}"))     
-    except Exception as e:
-        with self.print_lock:
-            timestamp = datetime.now().strftime("%H:%M:%S")
-            self.error_ports.append((timestamp, self.ip, port, "tcp", f"Exception error for port {port}: {str(e)}"))        
-    finally:
-        with self.print_lock:
-            self.completed_ports += 1
-            if self.progress_bar:
-                self.progress_bar.update(1)
+                timestamp = datetime.now().strftime("%H:%M:%S")
+                self.error_ports.append((timestamp, self.ip, port, "tcp", f"Exception error for port {port}: {str(e)}"))        
+        finally:
+            with self.print_lock:
+                self.completed_ports += 1
+                if self.progress_bar:
+                    self.progress_bar.update(1)
 
 
     def worker(self):
