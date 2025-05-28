@@ -9,8 +9,7 @@
 |__/      \______/ |__/         \___/        |__/  |__/ \_______/ \_______/ \_______/|__/ 
 
 ```
-
-A fast, multi-threaded TCP port scanner written in Python. Scan single hosts or ranges of ports with customizable performance and logging options, either interactively or via command-line.
+hello A fast, multi-threaded TCP port scanner written in Python. Scan single hosts or ranges of ports with customizable performance and logging options, either interactively or via command-line.
 
 ---
 
@@ -94,6 +93,7 @@ python main.py 192.168.1.1 -p 1-1024 -t 500 -T 2 --log
 - If logging is enabled, results are saved in the `logs/` directory:
   - `scannedports_.csv` — Open ports
   - `errorlogs_.csv` — Errors and timeouts
+  - `closedports_.csv` — Self-explanatory
 
 ---
 
