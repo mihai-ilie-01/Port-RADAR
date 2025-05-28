@@ -12,7 +12,6 @@ def parse_port_range(port_range):
         start, end = port_range.split('-')
         return int(start), int(end)
     elif ',' in port_range:
-        #@parse func
         # For comma-separated ports, return the chosen ports
         ports = [int(p.strip()) for p in port_range.split(',')]
         return ports
@@ -97,7 +96,6 @@ def get_user_input():
     print("-" * 18)
     while True:
         try:
-            #@get user input
             port_range = input("Enter port range to scan (default 1-65535): ").strip()
 
             if not port_range:
@@ -197,7 +195,6 @@ def get_user_input():
     print("SCAN CONFIGURATION SUMMARY")
     print("=" * 60)
     print(f"Target: {target}")
-    #@config user input
     if selected_ports is None:
         print(f"Port Range: {start_port}-{end_port}")
         print(f"Total Ports: {end_port - start_port + 1}")
