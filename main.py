@@ -21,7 +21,7 @@ def parse_port_range(port_range):
         return port, port
 
 def validate_ip(ip):
-    """Validate IP address format"""
+    """Validate IP address format test"""
     try:
         socket.inet_aton(ip)
         return True
