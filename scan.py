@@ -24,6 +24,7 @@ class ThreadedPortScanner:
         # Internally initialized instances
         self.open_ports = []
         self.error_ports = []
+        self.closed_ports = []
         self.port_queue = Queue()
         self.print_lock = Lock()
         self.startime = datetime.now().strftime("%Y-%m-%d_%H%M%S")
@@ -57,7 +58,7 @@ class ThreadedPortScanner:
                         
                 elif result == errno.ECONNREFUSED:
                     with self.print_lock:
-                        self.error_ports.append((datetime.now().strftime("%H:%M:%S"), self.ip, port, "tcp", f"CONNECTION REFUSED: Port {port} is closed (connection refused)"))
+                        self.closed_ports.append((datetime.now().strftime("%H:%M:%S"), self.ip, port, "tcp", f"CONNECTION REFUSED: Port {port} is closed (connection refused)"))
                 
                 elif result == errno.ETIMEDOUT:
                     with self.print_lock:
@@ -130,6 +131,8 @@ class ThreadedPortScanner:
         print(f"\nScan completed in {end_time - start_time:.2f} seconds")
         if len(self.open_ports) > 0:
             print(f"Found {len(self.open_ports)} for target : {self.ip}, open ports: {[elem[2] for elem in self.open_ports]}")
+        if len(self.closed_ports) > 0:
+            print(f"Found {len(self.closed_ports)} closed ports (see errorlogs_{self.startime}.cvs for more details)")
         if len(self.error_ports) > 0:
             print(f"Found {len(self.error_ports)} ports with errors (see errorlogs_{self.startime}.csv for more details)")
 
