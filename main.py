@@ -55,7 +55,7 @@ def get_user_input():
 |__/      \______/ |__/         \___/        |__/  |__/ \_______/ \_______/ \_______/|__/ 
 
 
-                                 PYTHON PORT SCANNER                                                                                 
+                                  PYTHON PORT SCANNER                                                                                 
                              BECODE - Mihai, Jeremie, Bilal                                                                           
 """
     print(Asciiart)
