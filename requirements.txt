@@ -1,1 +1,2 @@
-socket queue threading tqdm pandas errno
+pandas 
+tqdm
