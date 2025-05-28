@@ -207,7 +207,7 @@ def get_user_input():
         'rate_limit': delay,
         'log': log_enabled
     }
-
+print("test")
 def parse_command_line():
     """Parse command line arguments as alternative to interactive mode"""
     parser = argparse.ArgumentParser(description='Python Port Scanner CLI Interface')
