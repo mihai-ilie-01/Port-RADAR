@@ -28,7 +28,7 @@ class ThreadedPortScanner:
         self.port_queue = Queue()
         self.print_lock = Lock()
         self.startime = datetime.now().strftime("%Y-%m-%d_%H%M%S")
-        self.total_ports= end_port- start_port+1    # 
+        self.total_ports= end_port- start_port+1  
         self.progress_bar = None
         self.completed_ports = 0
 
@@ -129,17 +129,30 @@ class ThreadedPortScanner:
         end_time = time.time()
         
         print(f"\nScan completed in {end_time - start_time:.2f} seconds")
-        if len(self.open_ports) > 0:
-            print(f"Found {len(self.open_ports)} for target : {self.ip}, open ports: {[elem[2] for elem in self.open_ports]}")
-        if len(self.closed_ports) > 0:
-            print(f"Found {len(self.closed_ports)} closed ports (see errorlogs_{self.startime}.cvs for more details)")
-        if len(self.error_ports) > 0:
-            print(f"Found {len(self.error_ports)} ports with errors (see errorlogs_{self.startime}.csv for more details)")
+        if self.log == False:
+            if len(self.open_ports) > 0:
+                print(f"Found {len(self.open_ports)} port(s) for target : {self.ip}, open ports: {[elem[2] for elem in self.open_ports]}.")
+            if len(self.closed_ports) > 0:
+                print(f"Found {len(self.closed_ports)} closed ports.")
+            if len(self.error_ports) > 0:
+                print(f"Found {len(self.error_ports)} errors while scanning ports.")
 
-        if self.log == True:
-            port_df = pd.DataFrame(sorted(self.open_ports), columns=["TIME", "IP", "PORT", "TYPE", "STATUS"])
-            port_df.to_csv(f"./logs/{self.startime}_scannedports.csv", index=False)
-            error_df = pd.DataFrame(sorted(self.error_ports), columns=["TIME", "IP", "PORT", "TYPE", "ERROR"])
-            error_df.to_csv(f"./logs/{self.startime}_errorlogs.csv", index=False)
+        else:
+            if len(self.open_ports) > 0:
+                print(f"Found {len(self.open_ports)} port(s) for target : {self.ip}, open ports: {[elem[2] for elem in self.open_ports]} (see {self.startime}_openports.cvs)")
+            if len(self.closed_ports) > 0:
+                print(f"Found {len(self.closed_ports)} closed ports (see {self.startime}_closedports.csv for more details)")
+            if len(self.error_ports) > 0:
+                print(f"Found {len(self.error_ports)} errors while scanning ports (see _{self.startime}_errorlogs.csv for more details)")
+            os.mkdir(f"./logs/{self.startime}")
+            if len(self.open_ports) > 0:
+                port_df = pd.DataFrame(sorted(self.open_ports), columns=["TIME", "IP", "PORT", "TYPE", "STATUS"])
+                port_df.to_csv(f"./logs/{self.startime}/{self.startime}_scannedports.csv", index=False)
+            if len(self.error_ports) > 0:
+                error_df = pd.DataFrame(sorted(self.error_ports), columns=["TIME", "IP", "PORT", "TYPE", "ERROR"])
+                error_df.to_csv(f"./logs/{self.startime}/{self.startime}_errorlogs.csv", index=False)
+            if len(self.closed_ports) > 0:
+                closed_df = pd.DataFrame(sorted(self.closed_ports), columns=["TIME", "IP", "PORT", "TYPE", "ERROR"])
+                closed_df.to_csv(f"./logs/{self.startime}/{self.startime}_closedports.csv", index=False)
 
 
