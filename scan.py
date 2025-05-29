@@ -93,10 +93,13 @@ class ThreadedPortScanner:
     
     def scan(self):
         """Start the port scanning"""
-        print(f"Scanning {self.ip} from port {self.start_port} to {self.end_port}")
+        if self.selected_ports is None:
+            print(f"Scanning {self.ip} from port {self.start_port} to {self.end_port}")
+        else:
+            print(f"Scanning {self.selected_ports} from ip {self.ip}")
         print(f"Using {self.num_threads} threads with {self.timeout}s timeout")
         if self.rate_limit > 0:
-            print(f"Rate limiting enabled : {self.rate_limit} seconds delay between scans.")
+            print(f"Rate limiting enabled : {self.rate_limit} seconds delay between scans")
         start_time = time.time()
         
         # Initialize progress bar
@@ -150,5 +153,3 @@ class ThreadedPortScanner:
             if len(self.closed_ports) > 0:
                 closed_df = pd.DataFrame(sorted(self.closed_ports), columns=["TIME", "IP", "PORT", "TYPE", "ERROR"])
                 closed_df.to_csv(f"./logs/{self.startime}/{self.startime}_closedports.csv", index=False)
-
-
