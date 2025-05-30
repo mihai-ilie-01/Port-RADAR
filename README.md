@@ -35,12 +35,14 @@ A fast, multi-threaded TCP port scanner written in Python with support for both 
 - [scapy](https://pypi.org/project/scapy/) (for SYN scanning)
 
 Install dependencies with:
-```
+
+```python
 
 pip install -r requirements.txt
 
 ```
 
+---
 **For SYN scanning:**
 - Root/Administrator privileges required
 - Scapy library: `pip install scapy`
