@@ -10,12 +10,18 @@ import pandas as pd
 import errno
 from tqdm import tqdm
 import scapy.all as scapy
+import re
+
+domain_pattern = r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b'
 
 class ThreadedPortScanner:
     
     def __init__(self, ip, start_port=1, end_port=65535, selected_ports=None, num_threads=os.cpu_count()*100, timeout=1,rate_limit=0.1, log=False, scan_type="connect"):
         # Parameter initialized instances
-        self.ip = ip
+        if re.match(domain_pattern, ip):
+            self.ip = socket.gethostbyname(ip)
+        else:
+            self.ip = ip
         self.start_port = start_port
         self.end_port = end_port
         self.scan_type = scan_type

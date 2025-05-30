@@ -25,8 +25,11 @@ yes = "Y"
 no = "N"
 
 ipv4_pattern = r"^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?[0-9]?)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?[0-9]?)){3}$"
+domain_pattern = r'\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}\b'
+
 default_scan_type = "connect"
 valid_scan_types = ["connect", "syn"]
+
 log_directory = './logs'
 
 Asciiart = r"""
@@ -80,7 +83,7 @@ Asciiart = r"""
 
 def validate_ip(ip):
     """Validate IP address format test"""
-    if re.match(ipv4_pattern, ip):
+    if re.match(ipv4_pattern, ip) or re.match(domain_pattern, ip):
         return True
     else:
         return False
