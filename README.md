@@ -24,6 +24,7 @@ A fast, multi-threaded TCP port scanner written in Python with support for both 
 - CSV logging of open ports, closed ports, and errors
 - Progress bar with real-time results display
 - Cross-platform compatibility (Windows, Linux, macOS)
+---
 
 ---
 
@@ -41,6 +42,7 @@ Install dependencies with:
 pip install -r requirements.txt
 
 ```
+---
 
 ---
 **For SYN scanning:**
