@@ -25,7 +25,8 @@ yes = "Y"
 no = "N"
 
 ipv4_pattern = r"^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?[0-9]?)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?[0-9]?)){3}$"
-
+default_scan_type = "connect"
+valid_scan_types = ["connect", "syn"]
 log_directory = './logs'
 
 Asciiart = r"""
@@ -83,7 +84,21 @@ def validate_ip(ip):
         return True
     else:
         return False
-
+    
+def validate_scan_type(scan_type_choice):
+    """Validate scan type choice"""
+    try:
+        if not scan_type_choice:
+            return default_scan_type
+        
+        scan_type = scan_type_choice.lower().strip()
+        if scan_type not in valid_scan_types:
+            print(f"Invalid scan type: {scan_type_choice}. Valid options are: {', '.join(valid_scan_types)}")
+            raise ValueError
+        
+        return scan_type
+    except (ValueError, TypeError):
+        raise ValueError
 
 def validate_port_choice(port_choice):
     try:    
@@ -204,6 +219,25 @@ def get_user_input():
         except ValueError:
             print("Please try again. Valid formats are '443', '1-1024' or '1,23,8080,443'.\n")
     print()
+    
+    # Scan type configuration
+    print("SCAN TYPE CONFIGURATION")
+    print("-" * 23)
+    while True:
+        try:
+            input_scan_type = input(f"Enter scan type (connect/syn, default {default_scan_type}): ").strip()
+            data_scan_type = validate_scan_type(input_scan_type)
+            break
+        except ValueError:
+            print("Please enter 'connect' or 'syn'.\n")
+
+    # Warning for SYN scan
+    if data_scan_type == "syn":
+        print("⚠️  WARNING: SYN scan requires:")
+        print("   - Root/Administrator privileges")
+        print("   - Scapy library (pip install scapy)")
+        print("   - Will fallback to connect scan if requirements not met")
+    print()
 
     # Threading configuration with default
     print("PERFORMANCE SETTINGS")
@@ -269,6 +303,7 @@ def get_user_input():
     print("SCAN CONFIGURATION SUMMARY")
     print("=" * 60)
     print(f"Target: {target}")
+    print(f"Scan Type: {data_scan_type.upper()}") 
     if data_ports['selected_ports'] is None:
         print(f"Port Range: {data_ports['start_port']}-{data_ports['end_port']}")
         print(f"Total Ports: {data_ports['end_port'] - data_ports['start_port'] + 1}")
@@ -292,6 +327,7 @@ def get_user_input():
         'target': target,
         'start_port': data_ports['start_port'],
         'end_port': data_ports['end_port'],
+        'scan_type': data_scan_type,
         'selected_ports' : data_ports['selected_ports'],
         'threads': data_threads,
         'timeout': data_timeout,
@@ -304,13 +340,14 @@ def parse_command_line():
     parser = argparse.ArgumentParser(description='Python Port Scanner CLI Interface')
     parser.add_argument('target', nargs='?', help='Target IP address')
     parser.add_argument('-p', '--ports', default=f'{min_port}-{max_port}', help='Port range (e.g., 1-65535 or 80)')
+    parser.add_argument('-s', '--scan-type', choices=['connect', 'syn'], default=default_scan_type, help='Scan type: connect or syn')
     parser.add_argument('-t', '--threads', type=int, default=default_threads, help='Number of threads (max 10000)')
     parser.add_argument('-T', '--timeout', type=float, default=default_timeout, help='Connection timeout (0.1-10 seconds)')
     parser.add_argument('-d', '--delay', type=float, default=default_delay, help='Rate limiting delay between scans (0-5 seconds)')
     parser.add_argument('--log', action='store_true', help='Save results to CSV log file')
     parser.add_argument('--interactive', action='store_true', help='Force interactive mode')
-
     return parser.parse_args()
+
 
 def main():
     """Main entry point for the CLI interface"""
@@ -331,7 +368,13 @@ def main():
             print(f"Error: Invalid port range '{args.ports}'")
             sys.exit(1)
 
-        # Validate ranges
+        try:
+            data_scan_type = validate_scan_type(args.scan_type)
+        except ValueError:
+            print(f"Error: Invalid scan type '{args.scan_type}'")
+            sys.exit(1)
+
+        # Validate other parameters
         try:
             data_threads = validate_thread_choice(args.threads)
         except ValueError:
@@ -356,9 +399,10 @@ def main():
         
         config = {
             'target': args.target,
+            'scan_type': data_scan_type,
             'start_port': data_ports['start_port'],
             'end_port': data_ports['end_port'],
-            'selected_ports' : data_ports['selected_ports'],
+            'selected_ports': data_ports['selected_ports'],
             'threads': data_threads,
             'timeout': data_timeout,
             'rate_limit': data_delay,
@@ -367,6 +411,7 @@ def main():
 
     print("\nStarting port scanner with the following configuration:")
     print(f"Target: {config['target']}")
+    print(f"Scan Type: {config['scan_type'].upper()}")
     if config['selected_ports'] is not None:
         print(f"Selected Ports: {config['selected_ports']}")
     else:
@@ -388,11 +433,12 @@ def main():
         num_threads=config['threads'],
         timeout=config['timeout'],
         rate_limit=config['rate_limit'],
-        log=config['log']
+        log=config['log'],
+        scan_type=config['scan_type']
     )
 
-    scanner.scan()
-
+    scanner.scan(config['scan_type'])
+    
 if __name__ == '__main__':
     try:
         main()
