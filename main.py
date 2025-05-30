@@ -1,6 +1,5 @@
 import sys
 import argparse
-import socket
 import os
 import re
 from scan import ThreadedPortScanner
@@ -152,10 +151,10 @@ def validate_timeout_choice(timeout_choice):
 def validate_yes_no(yes_no):
     try:
         if not yes_no:
-            return no
+            return False
         if yes_no not in [yes, no]:
             raise ValueError
-        return yes_no
+        return True
     except (ValueError, TypeError):
         raise ValueError
 
@@ -234,19 +233,18 @@ def get_user_input():
         try:
             input_rate_limit_choice = input("Do you want to enable rate limiting to avoid detection? (Y/N, default N): ").strip().upper()
             rate_limit_choice = validate_yes_no(input_rate_limit_choice)
-            match rate_limit_choice:
-                case "N":
-                    data_delay= min_delay
-                    break
-                case "Y":
-                    print()
-                    while True:
-                        try:
-                            input_delay = input("Enter delay between scans in seconds (default 0.1): ").strip()
-                            data_delay = validate_delay(input_delay)
-                            break
-                        except ValueError:
-                            print(f"Please input a number between {min_delay} and {max_delay} to try again.\n")
+            if rate_limit_choice == False:
+                data_delay= min_delay
+                break
+            else:
+                print()
+                while True:
+                    try:
+                        input_delay = input("Enter delay between scans in seconds (default 0.1): ").strip()
+                        data_delay = validate_delay(input_delay)
+                        break
+                    except ValueError:
+                        print(f"Please input a number between {min_delay} and {max_delay} to try again.\n")
             break
         except ValueError:
             print("Please input Y or N.\n")
