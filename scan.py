@@ -101,69 +101,86 @@ class ThreadedPortScanner:
 
 
     def worker(self):
-        """Worker thread function"""
+        """Worker thread function for batch SYN scan or connect scan"""
         while not self.port_queue.empty():
             try:
-                port = self.port_queue.get(timeout=1)
-
                 if self.scan_type == "syn":
-                    self.syn_scan_port(port)
+                    # Grab a batch of ports
+                    ports_batch = []
+                    for _ in range(10):  # Batch size = 10 (tune as needed)
+                        try:
+                            port = self.port_queue.get_nowait()
+                            ports_batch.append(port)
+                            self.port_queue.task_done()
+                        except Empty:
+                            break
+                    if ports_batch:
+                        self.syn_scan_port_batch(ports_batch)
                 else:
+                    # Regular connect scan
+                    port = self.port_queue.get(timeout=1)
                     self.scan_port(port)
+                    self.port_queue.task_done()
 
-                self.port_queue.task_done()
             except queue.Empty:
                 break
 
-    def syn_scan_port(self, port):
-        """Perform SYN scan on a specific port with thread safety"""
+    def syn_scan_port_batch(self, ports_batch):
+        """
+        Perform SYN scan on a batch of ports using scapy.sr() for improved performance.
+        """
         try:
-            import scapy.all as scapy
 
-            with self.scapy_lock:  # Serialize all Scapy operations
-                # Create SYN packet
-                packet = scapy.IP(dst=self.ip) / scapy.TCP(dport=port, flags="S")
+            # Create a batch of SYN packets
+            packets = [scapy.IP(dst=self.ip)/scapy.TCP(dport=port, flags="S") for port in ports_batch]
 
-                # Send packet and wait for response
-                response = scapy.sr1(packet, timeout=self.timeout, verbose=0)
+            # Send all packets and receive replies
+            answered, unanswered = scapy.sr(packets, timeout=self.timeout, verbose=0)
 
-                if response and response.haslayer(scapy.TCP):
-                    if response[scapy.TCP].flags == 18:  # SYN-ACK
-                        # Send RST to close connection cleanly
-                        rst_packet = scapy.IP(dst=self.ip) / scapy.TCP(dport=port, flags="R")
-                        scapy.send(rst_packet, verbose=0)
-                        result = "open"
-                    elif response[scapy.TCP].flags == 4:  # RST
-                        result = "closed"
-                    else:
-                        result = "unknown"
-                elif response and response.haslayer(scapy.ICMP):
-                    result = "filtered"
-                else:
-                    result = "filtered"
-
-            # Handle results outside the lock
             timestamp = datetime.now().strftime("%H:%M:%S")
-            with self.print_lock:
-                if result == "open":
-                    self.open_ports.append((timestamp, self.ip, port, "syn", "open"))
-                    tqdm.write(f"[{timestamp}] Found open port: {port}")
-                elif result == "closed":
-                    self.closed_ports.append((timestamp, self.ip, port, "syn", "closed"))
-                else:
-                    self.closed_ports.append((timestamp, self.ip, port, "syn", result))
 
-            return result
+            results_handled = set()
+
+            with self.print_lock:
+                # Handle responses
+                for snd, rcv in answered:
+                    port = snd[scapy.TCP].dport
+                    results_handled.add(port)
+                    if rcv.haslayer(scapy.TCP):
+                        if rcv[scapy.TCP].flags == 18:  # SYN-ACK
+                            self.open_ports.append((timestamp, self.ip, port, "syn", "open"))
+                            tqdm.write(f"[{timestamp}] Found open port: {port}")
+                        elif rcv[scapy.TCP].flags == 20:  # RST
+                            self.closed_ports.append((timestamp, self.ip, port, "syn", "closed"))
+                        else:
+                            self.closed_ports.append((timestamp, self.ip, port, "syn", "unknown TCP flag"))
+                    elif rcv.haslayer(scapy.ICMP):
+                        self.closed_ports.append((timestamp, self.ip, port, "syn", "filtered (ICMP)"))
+                    else:
+                        self.closed_ports.append((timestamp, self.ip, port, "syn", "unknown response"))
+
+                # Handle unanswered ports
+                for pkt in unanswered:
+                    port = pkt[scapy.TCP].dport
+                    results_handled.add(port)
+                    self.closed_ports.append((timestamp, self.ip, port, "syn", "no response (possibly filtered)"))
+
+                # Failsafe: Handle any ports not in answered/unanswered
+                for port in ports_batch:
+                    if port not in results_handled:
+                        self.closed_ports.append((timestamp, self.ip, port, "syn", "no response"))
+
+                # Update progress bar
+                if self.progress_bar:
+                    self.progress_bar.update(len(ports_batch))
 
         except Exception as e:
             timestamp = datetime.now().strftime("%H:%M:%S")
             with self.print_lock:
-                self.error_ports.append((timestamp, self.ip, port, "syn", f"Exception: {str(e)}"))
-            return f"error: {str(e)}"
-        finally:
-            with self.print_lock:
-                if self.progress_bar:
-                    self.progress_bar.update(1)
+                self.error_ports.append((timestamp, self.ip, None, "syn", f"Exception in batch scan: {str(e)}"))
+
+            if self.progress_bar:
+                self.progress_bar.update(len(ports_batch))  # Still mark progress even on error
 
     
     def scan(self, scan_type="connect"):
