@@ -138,7 +138,7 @@ class ThreadedPortScanner:
 
         else:
             if len(self.open_ports) > 0:
-                print(f"Found {len(self.open_ports)} port(s) for target : {self.ip}, open ports: {[elem[2] for elem in self.open_ports]} (see {self.startime}_openports.cvs)")
+                print(f"Found {len(self.open_ports)} port(s) for target : {self.ip}, open ports: {[elem[2] for elem in self.open_ports]} (see {self.startime}_openports.csv)")
             if len(self.closed_ports) > 0:
                 print(f"Found {len(self.closed_ports)} closed ports (see {self.startime}_closedports.csv for more details)")
             if len(self.error_ports) > 0:
