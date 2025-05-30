@@ -165,7 +165,7 @@ def validate_timeout_choice(timeout_choice):
 
 def validate_yes_no(yes_no):
     try:
-        if not yes_no:
+        if not yes_no or yes_no == no:
             return False
         if yes_no not in [yes, no]:
             raise ValueError
@@ -294,7 +294,7 @@ def get_user_input():
             print("Please input Y or N.\n")
 
     # Create logs directory if logging is enabled
-    if log_choice == yes:
+    if log_choice:
         create_log_directory()
     
     print()
@@ -315,7 +315,7 @@ def get_user_input():
     print(f"Rate Limiting: {'Yes' if data_delay > 0 else 'No'}")
     if data_delay > 0:
         print(f"Scan Delay: {data_delay} seconds")
-    print(f"Save Logs: {'Yes' if log_choice == yes else 'No'}")
+    print(f"Save Logs: {'Yes' if log_choice else 'No'}")
     print("=" * 60)
 
     confirm = input("\nProceed with scan? (Y/N, default Y): ").strip().upper()
