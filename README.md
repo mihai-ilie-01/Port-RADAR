@@ -178,11 +178,9 @@ Found 997 closed ports (see logs for details)
 
 ## Authors
 
-- Mihai
-- Jeremie
-- Bilel
-
-_BeCode Python Port Scanner Project_
+- Mihai : [mihai-ilie-01](https://github.com/mihai-ilie-01)
+- Jeremie : [JeremieLoriaux](https://github.com/JeremieLoriaux)
+- Bilel :
 
 ---
 
