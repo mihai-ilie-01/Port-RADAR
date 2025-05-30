@@ -153,3 +153,63 @@ Scanning 192.168.1.1 from port 1 to 1000
 Using 100 threads with 1.0s timeout
 Scan type: SYN
 
+Scanning ports (syn): 100%|████████████| 1000/1000 [00:15<00:00, 65.2ports/s]
+
+[14:23:15] Found open port: 22
+[14:23:15] Found open port: 80
+[14:23:16] Found open port: 443
+
+Scan completed in 15.32 seconds
+Found 3 port(s) for target: 192.168.1.1, open ports:
+Found 997 closed ports (see logs for details)
+```
+
+
+---
+
+## Security Considerations
+
+- **Legal compliance**: Only scan systems you own or have explicit permission to test
+- **Rate limiting**: Use delays to avoid triggering security systems
+- **Privilege escalation**: SYN scanning requires elevated privileges
+- **Network impact**: High thread counts may impact network performance
+
+---
+
+## Authors
+
+- Mihai
+- Jeremie
+- Bilel
+
+_BeCode Python Port Scanner Project_
+
+---
+
+## Disclaimer
+
+This project is provided for educational and authorized security testing purposes only. Unauthorized scanning may be illegal and could violate computer crime laws. Users are responsible for ensuring they have proper authorization before scanning any systems.
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+- **"Permission denied" for SYN scan**: Run with `sudo` (Linux/macOS) or as Administrator (Windows)
+- **Scapy import errors**: Install with `pip install scapy`
+- **Slow SYN scanning**: This is normal due to threading serialization - use connect scan for speed
+- **High CPU usage**: Reduce thread count with `-t` option
+- **Logs not saved**: Ensure write permissions to the `logs/` directory
+
+### Performance Tips
+
+- Use **connect scan** for maximum speed on local networks
+- Use **SYN scan** for stealth on external targets (with proper authorization)
+- Adjust thread count based on your system capabilities
+- Enable rate limiting when scanning production systems
+
+---
+
+Happy scanning! 🔍
+
