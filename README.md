@@ -180,7 +180,7 @@ Found 997 closed ports (see logs for details)
 
 - Mihai : [mihai-ilie-01](https://github.com/mihai-ilie-01)
 - Jeremie : [JeremieLoriaux](https://github.com/JeremieLoriaux)
-- Bilel :
+- Bilel : [JH-Bilel](https://github.com/JH-Bilel)
 
 ---
 
