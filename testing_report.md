@@ -1,9 +1,7 @@
-**<h1 style="text-align:center;">Port RADAR design report</h1>**
+**<h1 style="text-align:center;">Port RADAR testing report</h1>**
 **<p style="text-align:center;">Mihai, Jeremie, Bilal | Becode KAMKAR 2025</p>**
 
 <br>
-
-# Software Testing Report
 
 ## Project Information
 - **Project Name:** Port Radar  
@@ -31,47 +29,55 @@ The objective of this testing is to validate the functionality, stability and ac
 ---
 
 ## Environement setup
+1. Setup both VM's on the same internal network>\
+| VM1: Internal Adapter, Intnet | VM2: Internal Adapter, Intnet |\
+<img src="./Images/IntNet_Ubuntu.PNG" width="200"/> <img src="./Images/IntNet_Target.PNG" width="202"/>
 
-1. Assigned VM1 the ip 192.168.10.10/24 and VM2 192.168.10.20/24
-| VM 1 : | Image 2 |
-|--------|--------|
-| ![Alt text 1](image1.jpg) | ![Alt text 2](image2.jpg) |
+2. Assigned the VM's ip addresses on the same subnet (/24).\
+| -----VM1: 192.168.10.10 -----|----- VM2: 192.168.10.20 -----|\
+<img src="./Images/ip_a_ubuntu.PNG" width="185"/> <img src="./Images/ip_a_target.PNG" width="240"/>
+
+3. Pinged each other to check if the can reach each other.\
+| -----VM1: Ping successfull -----|----- VM2:Ping successfull -----|\
+<img src="./Images/ping_target.PNG" width="205"/> <img src="./Images/ping_ubuntu.PNG" width="220"/>
+
+4. Open port 8080 with the command python -m http.server 8080 on VM2.\
+<img src="./Images/setup_http_8080_target.PNG" width="400"/>
 
 ## Test Cases
 
 | Test Case ID | Description                       | Input                       | Expected Result                              | Actual Result     | Pass/Fail |
 |--------------|----------------------------------|-----------------------------|----------------------------------------------|-------------------|-----------|
-| TC01         | Scan open TCP ports on localhost |               | List of open ports (e.g., 80, 443)            | As expected       | ✅         |
-| TC02         | Detect web server on port 80      | 192.168.1.10                | HTTP 200/404/403/etc. on root `/`             | 200 OK            | ✅         |
-| TC03         | Endpoint discovery on web server  | 192.168.1.10 + /admin,/login | Status codes returned for each path           | /admin: 403, etc. | ✅         |
-| TC04         | Handle closed ports gracefully     | 192.168.1.15 (closed ports) | No crash; report timeout/refused              | Timeout handled   | ✅         |
-| TC05         | Invalid IP format handling        | `abc.def.123`               | Raise error / show invalid IP message         | Proper error shown| ✅         |
+| TC01         | Scan open TCP ports on localhost | 127.0.0.1, rest default              | List of open ports on local machine         | [631, 6463, 9003, 9001, 9002, 900, ...]      | Pass        |
+| TC02         | Scan open TCP ports on VM2      | 192.168.10.20, rest default | List of open ports on target machine             | None          | Fail        |
+| TC03         | Scan open TCP ports on VM2 after opening port 8080 | 192.192.168.10.20, rest default | [8080] | [8080] | pass        |
 
 ---
 
 ## Bugs / Issues Found
 
-| Bug ID | Description                        | Severity | Status    | Notes                   |
-|--------|----------------------------------|----------|-----------|-------------------------|
-| B01    | Timeout error not handled properly | Medium   | Fixed     | Added try/except block   |
-| B02    | Incorrect status parsing on HTTPS  | Low      | Open      | Requires HTTPS handling  |
+No bugs were detected.
 
 ---
 
-## 📈 Summary
+## Summary
 
-- **Total Test Cases:** 5  
-- **Passed:** 5  
-- **Failed:** 0  
-- **Open Bugs:** 1  
-- **Fixed Bugs:** 1  
+- **Total Test Cases:** 3
+- **Passed:** 2 
+- **Failed:** 1    
 
 **Conclusion:**  
-The scanner performs as expected in identifying open ports and common HTTP endpoints. It handles errors gracefully and returns informative responses. HTTPS support and deeper endpoint crawling are potential next steps.
+The scanner performs as expected in identifying open ports.
 
 ---
 
-## 📎 Attachments (if applicable)
-- Test logs  
-- Screenshots  
-- Code snippets  
+## Attachments
+### Test screenshots :
+ #### Test Case 1:
+ <img src="./Images/default_localhost_scan.PNG" width="500"/>
+
+  ### Test Case 2:
+ <img src="./Images/default_target_scan_no_ports.PNG" width="500"/>
+
+  ### Test Case 3:
+ <img src="./Images/default_target_scan_port_8080.PNG" width="500"/>
