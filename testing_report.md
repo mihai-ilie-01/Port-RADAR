@@ -46,11 +46,19 @@ The objective of this testing is to validate the functionality, stability and ac
 
 ## Test Cases
 
-| Test Case ID | Description                       | Input                       | Expected Result                              | Actual Result     | Pass/Fail |
+| Test Case ID | Description                       | Inputs                       | Expected Result                              | Actual Result     | Pass/Fail |
 |--------------|----------------------------------|-----------------------------|----------------------------------------------|-------------------|-----------|
 | TC01         | Scan open TCP ports on localhost | 127.0.0.1, rest default              | List of open ports on local machine         | [631, 6463, 9003, 9001, 9002, 900, ...]      | Pass        |
 | TC02         | Scan open TCP ports on VM2      | 192.168.10.20, rest default | List of open ports on target machine             | None          | Fail        |
-| TC03         | Scan open TCP ports on VM2 after opening port 8080 | 192.192.168.10.20, rest default | [8080] | [8080] | pass        |
+| TC03         | Scan open TCP ports on VM2 after opening port 8080 | 192.192.168.10.20, rest default | [8080] | [8080] | Pass        |
+| TC04         | Tested multiple invalid ip address inputs | hello, 256.0.0.0, 987 | Program asks to try again | Invalid input, please try again | Pass        |
+| TC05         | Tested multiple invalid port range inputs | hello, 0, 65536, 22.0, 22,0 0-100 | Program asks to try again | Invalid input, please try again | Pass        |
+| TC06         | Tested multiple invalid scan type inputs | hello, 09, sin | Program asks to try again | Invalid input, please try again | Pass        |
+| TC07         | Tested multiple invalid thread inputs | hello, 0, 11000, 1.5 | Program asks to try again | Invalid input, please try again | Pass        |
+| TC08         | Tested invalid timeout input | hello| Program asks to try again | Invalid input, please try again | Pass        |
+| TC09         | Tested multiple invalid rate limit inputs | hello, 1| Program asks to try again | Invalid input, please try again | Pass        |
+| TC10         | Tested multiple delay inputs | hello, 6.0| Program asks to try again | Invalid input, please try again | Pass        |
+| TC11         | Tested multiple log inputs | hello, 4, h| Program asks to try again | Invalid input, please try again | Pass        |
 
 ---
 
@@ -76,8 +84,32 @@ The scanner performs as expected in identifying open ports.
  #### Test Case 1:
  <img src="./Images/default_localhost_scan.PNG" width="500"/>
 
-  ### Test Case 2:
+ #### Test Case 2:
  <img src="./Images/default_target_scan_no_ports.PNG" width="500"/>
 
-  ### Test Case 3:
+ #### Test Case 3:
  <img src="./Images/default_target_scan_port_8080.PNG" width="500"/>
+
+ #### Test Case 4:
+ <img src="./Images/Input_ip.PNG" width="500"/>
+
+ #### Test Case 5:
+ <img src="./Images/input_ports_range.PNG" width="500"/>
+
+ #### Test Case 6:
+ <img src="./Images/input_scan_type.PNG" width="500"/>
+
+ #### Test Case 7:
+ <img src="./Images/input_threads.PNG" width="500"/>
+
+ #### Test Case 8:
+ <img src="./Images/input_timeout.PNG" width="500"/>
+
+ #### Test Case 9:
+ <img src="./Images/input_rate_limiting.PNG" width="500"/>
+
+ #### Test Case 10:
+ <img src="./Images/input_delay.PNG" width="500"/>
+
+ #### Test Case 11:
+ <img src="./Images/input_log.PNG" width="500"/>

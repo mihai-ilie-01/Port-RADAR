@@ -128,6 +128,9 @@ def validate_port_choice(port_choice):
         
         else:
             port = int(port_choice)
+            if not min_port <= port <= max_port:
+                print(f"Invalid port range: {port_choice}, the desired port range must be between {min_port} and {max_port}.")
+                raise ValueError
             return {'start_port' : port, 'end_port' : port, 'selected_ports' : None}
     
     except (ValueError, TypeError):
